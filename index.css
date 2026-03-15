@@ -30,6 +30,7 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   position: relative;
   z-index: 2;
+  margin-top: -5px;
 }
 
 .seek-bar:hover::-webkit-slider-thumb {
@@ -46,6 +47,7 @@
   border: none;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-top: -5px;
 }
 
 .seek-bar:hover::-moz-range-thumb {
@@ -316,4 +318,24 @@
 .back-link:hover {
   color: #fff;
   gap: 10px;
+}
+
+/* ─── Sync Editor: Inline Edit ─── */
+.sync-edit-input {
+  caret-color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+}
+
+.sync-edit-input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.sync-edit-save:active,
+.sync-edit-cancel:active {
+  transform: scale(0.9);
+}
+
+/* Sync Editor: Pause/Resume button */
+.sync-pause-btn:active {
+  transform: scale(0.92);
 }

@@ -42,6 +42,55 @@ const formatTime = (seconds: number): string => {
     return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
+// Format seconds to SRT timestamp: HH:MM:SS,mmm
+const toSrtTimestamp = (seconds: number): string => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    const ms = Math.round((seconds - Math.floor(seconds)) * 1000);
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')},${ms.toString().padStart(3, '0')}`;
+};
+
+// Format seconds to SMI timestamp (milliseconds)
+const toSmiTimestamp = (seconds: number): number => {
+    return Math.round(seconds * 1000);
+};
+
+const generateSRT = (lyrics: LyricLine[]): string => {
+    const timedLyrics = lyrics.filter(l => l.timestamp !== undefined);
+    return timedLyrics.map((line, i) => {
+        const start = line.timestamp!;
+        const end = timedLyrics[i + 1]?.timestamp ?? start + 5;
+        return `${i + 1}\n${toSrtTimestamp(start)} --> ${toSrtTimestamp(end)}\n${line.text}\n`;
+    }).join('\n');
+};
+
+const generateSMI = (lyrics: LyricLine[]): string => {
+    const timedLyrics = lyrics.filter(l => l.timestamp !== undefined);
+    let body = '';
+    timedLyrics.forEach((line, i) => {
+        const startMs = toSmiTimestamp(line.timestamp!);
+        const endMs = timedLyrics[i + 1]?.timestamp !== undefined
+            ? toSmiTimestamp(timedLyrics[i + 1].timestamp!)
+            : startMs + 5000;
+        body += `  <SYNC Start=${startMs}><P Class=ENCC>${line.text}</P></SYNC>\n`;
+        body += `  <SYNC Start=${endMs}><P Class=ENCC>&nbsp;</P></SYNC>\n`;
+    });
+    return `<SAMI>\n<HEAD>\n  <STYLE TYPE="text/css">\n    P { font-family: Arial; font-size: 20pt; color: white; font-weight: bold; text-align: center; }\n    .ENCC { Name: English; lang: en-US; }\n  </STYLE>\n</HEAD>\n<BODY>\n${body}</BODY>\n</SAMI>`;
+};
+
+const downloadFile = (content: string, filename: string, mimeType: string) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+};
+
 const VideoExporter: React.FC<VideoExporterProps> = ({
     audioUrl,
     backgroundUrl,
@@ -66,6 +115,9 @@ const VideoExporter: React.FC<VideoExporterProps> = ({
     const [overlayOpacity, setOverlayOpacity] = useState(0.6);
     const [showGlow, setShowGlow] = useState(true);
 
+    const [isScrubbing, setIsScrubbing] = useState(false);
+    const [wasPlayingBeforeScrub, setWasPlayingBeforeScrub] = useState(false);
+
     const [isRecording, setIsRecording] = useState(false);
     const isRecordingRef = useRef(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -87,10 +139,12 @@ const VideoExporter: React.FC<VideoExporterProps> = ({
     // Low-frequency UI updater for the seek bar and time display (~4 Hz)
     useEffect(() => {
         const id = setInterval(() => {
-            setDisplayTime(currentTimeRef.current);
+            if (!isScrubbing) {
+                setDisplayTime(currentTimeRef.current);
+            }
         }, 250);
         return () => clearInterval(id);
-    }, []);
+    }, [isScrubbing]);
 
     // Easing function for smooth animation
     const easeOutCubic = (x: number): number => {
@@ -251,6 +305,23 @@ const VideoExporter: React.FC<VideoExporterProps> = ({
         }
     };
 
+    const handleScrubStart = () => {
+        setWasPlayingBeforeScrub(isPlaying);
+        if (isPlaying && audioRef.current) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+        }
+        setIsScrubbing(true);
+    };
+
+    const handleScrubEnd = () => {
+        setIsScrubbing(false);
+        if (wasPlayingBeforeScrub && audioRef.current) {
+            audioRef.current.play();
+            setIsPlaying(true);
+        }
+    };
+
     const skipForward = () => {
         if (audioRef.current) {
             audioRef.current.currentTime = Math.min(audioRef.current.currentTime + 10, duration);
@@ -379,6 +450,10 @@ const VideoExporter: React.FC<VideoExporterProps> = ({
                             step={0.1}
                             value={displayTime}
                             onChange={handleSeek}
+                            onMouseDown={handleScrubStart}
+                            onMouseUp={handleScrubEnd}
+                            onTouchStart={handleScrubStart}
+                            onTouchEnd={handleScrubEnd}
                             className="seek-bar relative z-10"
                             style={{ background: 'transparent' }}
                         />
@@ -547,6 +622,31 @@ const VideoExporter: React.FC<VideoExporterProps> = ({
                             role="switch"
                             aria-checked={showGlow}
                         />
+                    </div>
+                </div>
+
+                {/* Export Settings */}
+                <div className="settings-card p-5 md:col-span-2">
+                    <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 px-1">Export Subtitles</h3>
+                    <div className="flex items-center gap-3 px-1">
+                        <button
+                            onClick={() => downloadFile(generateSRT(syncedLyrics), 'karaoke-subtitles.srt', 'text/plain')}
+                            className="h-10 px-5 rounded-xl flex items-center gap-2 border border-white/[0.08] bg-white/[0.04] text-zinc-300 text-sm font-medium transition-all hover:border-white/[0.16] hover:text-white hover:bg-white/[0.07]"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            .SRT
+                        </button>
+                        <button
+                            onClick={() => downloadFile(generateSMI(syncedLyrics), 'karaoke-subtitles.smi', 'text/plain')}
+                            className="h-10 px-5 rounded-xl flex items-center gap-2 border border-white/[0.08] bg-white/[0.04] text-zinc-300 text-sm font-medium transition-all hover:border-white/[0.16] hover:text-white hover:bg-white/[0.07]"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            .SMI
+                        </button>
                     </div>
                 </div>
             </div>
