@@ -5,7 +5,6 @@ export const RESOLUTIONS = {
   '9:16': { width: 2160, height: 3840 },
 };
 
-export const DEFAULT_BACKGROUND_PROMPT = "Abstract neon lights moving slowly in a dark room, 4k, high quality, loopable background";
 
 export const STEP_IDS: Record<AppStep, number> = {
   [AppStep.UPLOAD]: 1,

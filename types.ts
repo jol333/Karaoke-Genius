@@ -19,9 +19,7 @@ export interface ProjectState {
   audioUrl: string | null;
   rawLyrics: string;
   parsedLyrics: LyricLine[];
-  backgroundVideoUrl: string | null; // Keeping for potential video uploads later
-  backgroundImageUrl: string | null; // New field for images
-  backgroundPrompt: string;
+  backgroundImageUrl: string | null;
   aspectRatio: AspectRatio;
   textColor: string;
 }

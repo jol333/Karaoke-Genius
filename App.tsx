@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { AppStep, ProjectState, AspectRatio } from './types';
-import { DEFAULT_BACKGROUND_PROMPT, STEP_IDS } from './constants';
+import { STEP_IDS } from './constants';
 import StepIndicator from './components/StepIndicator';
 import SyncEditor from './components/SyncEditor';
 import VideoExporter from './components/VideoExporter';
-import { suggestVisualPrompt } from './services/geminiService';
 
 const App: React.FC = () => {
   // --- Global State ---
@@ -16,9 +15,7 @@ const App: React.FC = () => {
     audioUrl: null,
     rawLyrics: '',
     parsedLyrics: [],
-    backgroundVideoUrl: null,
     backgroundImageUrl: null,
-    backgroundPrompt: DEFAULT_BACKGROUND_PROMPT,
     aspectRatio: '16:9',
     textColor: '#FFFFFF',
   });
@@ -63,16 +60,6 @@ const App: React.FC = () => {
         .map(l => ({ id: Math.random().toString(36).substr(2, 9), text: l }));
     
     setProject(prev => ({ ...prev, rawLyrics: text, parsedLyrics: lines }));
-    
-    // Auto suggest prompt (still useful for ideas, though we upload image now)
-    if (lines.length > 0) {
-      suggestVisualPrompt(text).then(prompt => {
-         setProject(prev => ({ ...prev, backgroundPrompt: prompt }));
-      }).catch(console.error);
-    }
-    
-    // If lyrics change, sync might be off, but we don't strictly enforce reset unless needed.
-    // However, moving to background usually implies we are moving forward.
     setStep(AppStep.BACKGROUND);
   };
 
