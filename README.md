@@ -1,8 +1,8 @@
-# KaraokeGenius
+# Karaoke Genius
 
 > **Create stunning 4K karaoke videos for free, right on your machine!**
 
-KaraokeGenius 4K is a completely free, local karaoke video maker that allows you to create professional-quality lyric videos without uploading your personal audio files or images to the cloud. Because the entire process runs locally in your web browser, your data remains 100% private and secure. Whether you're looking for offline karaoke software to practice your singing or a free tool to generate high-resolution lyric videos for YouTube or TikTok, KaraokeGenius 4K provides a seamless, privacy-focused experience.
+Karaoke Genius is a completely free, local karaoke video maker that allows you to create professional-quality lyric videos without uploading your personal audio files or images to the cloud. Because the entire process runs locally in your web browser, your data remains 100% private and secure. Whether you're looking for offline karaoke software to practice your singing or a free tool to generate high-resolution lyric videos for YouTube or TikTok, Karaoke Genius provides a seamless, privacy-focused experience.
 
 ## Features
 
@@ -17,19 +17,19 @@ KaraokeGenius 4K is a completely free, local karaoke video maker that allows you
 
  1. **How can I make a karaoke video for free with my own music?**
 
-You can use KaraokeGenius 4K! It's a completely free karaoke video maker. Just upload your MP3 or audio track, paste your lyrics, sync them to the beat, and export your video without paying a dime. 
+You can use Karaoke Genius! It's a completely free karaoke video maker. Just upload your MP3 or audio track, paste your lyrics, sync them to the beat, and export your video without paying a dime. 
 
  2. **Is there a karaoke maker that doesn't upload my files to the internet?**
 
-Yes! KaraokeGenius 4K is designed to be privacy-focused. The entire process runs locally in your browser. This means your personal audio files, background images, and lyrics are never uploaded to any servers, keeping your data entirely private.
+Yes! Karaoke Genius is designed to be privacy-focused. The entire process runs locally in your browser. This means your personal audio files, background images, and lyrics are never uploaded to any servers, keeping your data entirely private.
 
  3. **How do I create a 4K karaoke video with synced lyrics for YouTube or TikTok?**
 
-With KaraokeGenius 4K, you can easily select between a 16:9 landscape aspect ratio (ideal for YouTube) or a 9:16 portrait aspect ratio (perfect for TikTok or Instagram Reels). Upload a 4K background image and your audio file, sync your lyrics using the intuitive timeline, and export the final high-resolution video directly to your computer.
+With Karaoke Genius, you can easily select between a 16:9 landscape aspect ratio (ideal for YouTube) or a 9:16 portrait aspect ratio (perfect for TikTok or Instagram Reels). Upload a 4K background image and your audio file, sync your lyrics using the intuitive timeline, and export the final high-resolution video directly to your computer.
 
  4. **What is the best offline app to create lyric videos?**
 
-KaraokeGenius 4K acts as local karaoke software that runs within your local environment. Because it processes everything locally using modern web technologies, it offers the performance and privacy of native offline software.
+Karaoke Genius acts as local karaoke software that runs within your local environment. Because it processes everything locally using modern web technologies, it offers the performance and privacy of native offline software.
 
 ## Tech Stack
 
